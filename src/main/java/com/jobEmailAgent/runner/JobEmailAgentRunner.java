@@ -3,7 +3,7 @@ package com.jobEmailAgent.runner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.jobEmailAgent.gmail.GmailReaderService;
+import com.jobEmailAgent.service.GmailReaderService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

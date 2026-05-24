@@ -1,4 +1,4 @@
-package com.jobEmailAgent.gmail;
+package com.jobEmailAgent.service;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
