@@ -22,6 +22,7 @@ target/
 # Gmail OAuth sensitive files
 tokens/
 credentials.json
+src/main/resources/resume.txt
 
 # Local DB
 *.db
