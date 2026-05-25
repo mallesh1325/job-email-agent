@@ -15,6 +15,9 @@ public class EmailClassifierService {
 
         boolean linkedinEmail =
                 lowerFrom.contains("linkedin");
+        boolean noReplyEmail =
+                lowerFrom.contains("noreply")
+                || lowerFrom.contains("no-reply");
 
         boolean jobAlertEmail =
                 lowerFrom.contains("jobalerts")
@@ -25,21 +28,45 @@ public class EmailClassifierService {
                 || lowerFrom.contains("jobalert")
                 || lowerBody.contains("jobs we recommend")
                 || lowerFrom.contains("ladders");
-
-
+        
         boolean recruiterEmail =
                 !linkedinEmail
+                && !noReplyEmail
                 && (
                     lowerSubject.contains("java")
                     || lowerSubject.contains("developer")
                     || lowerSubject.contains("recruiter")
+                    || lowerSubject.contains("engineer")
+                    || lowerSubject.contains("fulltime")
+                    || lowerSubject.contains("permanent")
+                    || lowerSubject.contains("contract")
+                    || lowerSubject.contains("hybrid")
+                    || lowerSubject.contains("onsite")
                     || lowerBody.contains("role")
                     || lowerBody.contains("location")
                     || lowerBody.contains("duration")
+                    || lowerBody.contains("job opportunity")
+                    || lowerBody.contains("staffing")
+                    || lowerBody.contains("client")
+                    || lowerBody.contains("experience")
                 );
 
         if (jobAlertEmail) {
             return EmailType.JOB_ALERT;
+        }
+        
+        boolean linkedInRecruiterMessage =
+                lowerFrom.contains("inmail")
+                && (
+                    lowerBody.contains("contract opportunity")
+                    || lowerBody.contains("remote contract")
+                    || lowerBody.contains("senior java developer role")
+                    || lowerBody.contains("wanted to reach out")
+                    || lowerBody.contains("came across your profile")
+                );
+
+        if (linkedInRecruiterMessage) {
+            return EmailType.RECRUITER_OUTREACH;
         }
 
         if (linkedinEmail) {

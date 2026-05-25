@@ -29,7 +29,8 @@ public class GmailReaderService {
 	private final SkillExtractor skillExtractor;
 	private final EmailClassifierService emailClassifierService;
 	private final MatchScoringService matchScoringService;
-	private final ProcessedEmailRepository processedEmailRepository ;
+	private final ProcessedEmailRepository processedEmailRepository;
+	private final ResumeService resumeService;
 
 	public void readLatestEmails() {
 		try {
@@ -37,7 +38,11 @@ public class GmailReaderService {
 
 			ListMessagesResponse response = gmail.users().messages().list("me").setQ(
 					"(from:linkedin OR subject:Java OR subject:Developer OR subject:Engineer OR subject:Recruiter) newer_than:7d")
-					.setMaxResults(10L).execute();
+					.setMaxResults(80L).execute();
+			
+			String resumeText = resumeService.loadResumeText();
+
+			log.info("Resume loaded successfully. Length={}", resumeText.length());
 
 			List<Message> messages = response.getMessages();
 			
@@ -62,23 +67,26 @@ public class GmailReaderService {
 						.get("me", message.getId())
 						.setFormat("full")
 						.execute();
-				
-				
-				
-				
 
 				String subject = getHeader(fullMessage, "Subject");
 				String from = getHeader(fullMessage, "From");
 				String body = extractEmailBody(fullMessage);
-				List<String> skills = skillExtractor.extractSkills(body);
+				
+				String cleanBody = body
+				        .replaceAll("(?s)<script.*?</script>", " ")
+				        .replaceAll("(?s)<style.*?</style>", " ")
+				        .replaceAll("<[^>]+>", " ")
+				        .replaceAll("&nbsp;", " ")
+				        .replaceAll("\\s+", " ")
+				        .trim();
+
+				List<String> skills = skillExtractor.extractSkills(cleanBody);
 				
 				EmailType emailType =
-				        emailClassifierService.classify(from, subject, body);
+				        emailClassifierService.classify(from, subject, cleanBody);
 				
 				int matchingScore =
-				        matchScoringService.calculateScore(skills, emailType, body);
-
-
+				        matchScoringService.calculateScore(skills, emailType, cleanBody);
 
 				JobEmail jobEmail = JobEmail.builder()
 				        .from(from)
@@ -86,7 +94,7 @@ public class GmailReaderService {
 				        .emailType(emailType)
 						.matchLevel(matchScoringService.getMatchLevel(matchingScore))
 						.matchingScore(matchingScore)
-				        .body(body)
+				        .body(cleanBody)
 				        .build();
 
 				log.info("Job Email: from={}, subject={}, emailType={}, matchLevel={}, matchingScore={}",
@@ -96,7 +104,7 @@ public class GmailReaderService {
 				        jobEmail.getMatchLevel(),
 				        jobEmail.getMatchingScore());
 				
-				log.info("Body Preview: {}", body.substring(0, Math.min(body.length(), 300)));
+				log.info("Body Preview: {}", cleanBody.substring(0, Math.min(cleanBody.length(), 300)));
 				log.info("Matching Skill {} ", skills );
 				
 				
