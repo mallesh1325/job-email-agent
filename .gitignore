@@ -1,10 +1,12 @@
 HELP.md
+
+# Maven
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+# STS
 .apt_generated
 .classpath
 .factorypath
@@ -13,30 +15,65 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ
+.idea/
 *.iws
 *.iml
 *.ipr
 
-# Gmail OAuth sensitive files
-tokens/
-credentials.json
-src/main/resources/resume.txt
+# VS Code
+.vscode/
 
-# Local DB
-*.db
-
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+# Gradle
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+#################################################
+# Sensitive Files
+#################################################
 
-### VS Code ###
-.vscode/
+# Gmail OAuth
+tokens/
+credentials.json
+**/credentials.json
+
+# Resume
+src/main/resources/resume.txt
+
+# Application secrets
+src/main/resources/application.properties
+src/main/resources/application.yml
+
+# Environment files
+.env
+.env.*
+
+#################################################
+# Local Databases
+#################################################
+
+*.db
+*.sqlite
+*.sqlite3
+
+#################################################
+# Logs
+#################################################
+
+logs/
+*.log
+
+#################################################
+# OS Files
+#################################################
+
+.DS_Store
+Thumbs.db

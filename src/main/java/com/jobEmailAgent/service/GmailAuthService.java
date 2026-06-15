@@ -26,7 +26,7 @@ public class GmailAuthService {
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
-    private static final List<String> SCOPES = List.of(GmailScopes.GMAIL_READONLY);
+    private static final List<String> SCOPES = List.of(GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_COMPOSE);
 
     public Gmail getGmailService() throws Exception {
 

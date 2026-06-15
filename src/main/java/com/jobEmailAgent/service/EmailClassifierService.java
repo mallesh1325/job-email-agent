@@ -51,7 +51,43 @@ public class EmailClassifierService {
                     || lowerBody.contains("experience")
                 );
 
-        if (jobAlertEmail) {
+        boolean linkedinJobNotification =
+                lowerFrom.contains("jobs-noreply@linkedin.com")
+                && (
+                    lowerSubject.contains("apply now")
+                    || lowerSubject.contains("your application was sent")
+                    || lowerSubject.contains("your application was viewed")
+                    || lowerSubject.contains("problem with your")
+                    || lowerBody.contains("view job:")
+                );
+
+        // Automated "application received" confirmations from ATS platforms (Workday,
+        // Greenhouse, Lever, iCIMS, etc.). These are auto-replies, not a recruiter asking
+        // for a response, so they shouldn't generate a reply draft.
+        boolean applicationConfirmationEmail =
+                lowerSubject.contains("thank you for applying")
+                || lowerSubject.contains("thanks for applying")
+                || lowerSubject.contains("application received")
+                || lowerSubject.contains("we received your application")
+                || lowerSubject.contains("your application to")
+                || lowerBody.contains("thank you for applying")
+                || lowerBody.contains("thanks for taking the time to apply")
+                || lowerBody.contains("we have received your application")
+                || lowerBody.contains("reviewing your application")
+                || lowerBody.contains("our recruiting team will review")
+                || lowerFrom.contains("myworkday.com")
+                || lowerFrom.contains("myworkdayjobs.com")
+                || lowerFrom.contains("greenhouse.io")
+                || lowerFrom.contains("lever.co")
+                || lowerFrom.contains("icims.com")
+                || lowerFrom.contains("smartrecruiters.com")
+                || lowerFrom.contains("taleo.net")
+                || lowerFrom.contains("successfactors")
+                || lowerFrom.contains("workablemail.com")
+                || lowerFrom.contains("jobvite.com")
+                || lowerFrom.contains("ashbyhq.com");
+
+        if (jobAlertEmail || linkedinJobNotification || applicationConfirmationEmail) {
             return EmailType.JOB_ALERT;
         }
         

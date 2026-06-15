@@ -107,6 +107,40 @@ public class MatchScoringService {
 		return Math.max(0, Math.min(score, 100));
 	}
 
+	/**
+	 * Scores a job posting (from a web job board) against the candidate's resume skills.
+	 * Unlike {@link #calculateScore}, this is purely about how well the posting matches
+	 * the candidate's actual background, plus a few general desirability signals.
+	 */
+	public int calculateJobMatchScore(List<String> jobSkills, List<String> resumeSkills, String description) {
+
+		int score = 0;
+		String lowerDesc = description == null ? "" : description.toLowerCase();
+
+		// Overlap between skills mentioned in the posting and skills on the resume
+		long overlap = jobSkills.stream().filter(resumeSkills::contains).count();
+		score += (int) Math.min(overlap * 12, 60);
+
+		// Work mode preferences
+		if (lowerDesc.contains("remote"))
+			score += 10;
+		if (lowerDesc.contains("hybrid"))
+			score += 5;
+
+		// Seniority signal
+		if (lowerDesc.contains("senior") || lowerDesc.contains("sr."))
+			score += 5;
+
+		// Visa / work authorization (mirrors logic in calculateScore)
+		if (lowerDesc.contains("h1b") || lowerDesc.contains("h-1b") || lowerDesc.contains("visa sponsorship"))
+			score += 10;
+		if (lowerDesc.contains("us citizen") || lowerDesc.contains("usc only")
+				|| lowerDesc.contains("green card only") || lowerDesc.contains("citizen only"))
+			score -= 30;
+
+		return Math.max(0, Math.min(score, 100));
+	}
+
 	// Matching Score
 	public MatchLevel getMatchLevel(int score) {
 
